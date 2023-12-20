@@ -7,7 +7,8 @@ def pdf_to_html(input_pdf_path, output_html_path):
         html_content = ""
         lastsize = 0
         output = ""
-        test = -1
+        count = 0
+        occurrence = 0
 
         for page_number in range(len(pdf.pages)):
             page = pdf.pages[page_number]
@@ -16,18 +17,21 @@ def pdf_to_html(input_pdf_path, output_html_path):
                 font_sizes.append(element['size'])
                 output += element['text']
 
-            # print (output)
             text = page.extract_text()
             # Iterate through text elements and assign corresponding font sizes
             for i, text_element in enumerate(text):
-                test += 1
-                font_size = font_sizes[test]
-                if text_element == "\n":
-                    test = test - 1
+                font_size = font_sizes[count]
+                if output[count] != " ":
+                    occurrence = 0
+                if text_element == output[count]:
+                    count += 1
+                elif output[count] == " ":
+                    occurrence += 1
+                    count += occurrence
                 if font_size == lastsize:
                     html_content += f'{text_element}'
                 else:
-                    html_content += f'</span><span style="font-size: {font_size}pt;">{text_element}'
+                    html_content += f'</span><span style="font-size: {font_size}pt;"><br>{text_element}'
                 lastsize = font_size
 
         # Write HTML content to the output file
