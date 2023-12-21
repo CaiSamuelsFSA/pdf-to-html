@@ -28,6 +28,7 @@ def pdf_to_html(input_pdf_path, output_html_path):
                 elif output[count] == " ":
                     occurrence += 1
                     count += occurrence
+                    font_size = font_sizes[count]
                 if font_size == lastsize:
                     html_content += f'{text_element}'
                 else:
