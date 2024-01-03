@@ -9,6 +9,8 @@ def pdf_to_html(input_pdf_path, output_html_path):
         occurrence = 0
         closeTag = ""
         sizes = []
+        isBold = []
+        boldText = False
 
         for page_number in range(len(pdf.pages)):
             page = pdf.pages[page_number]
@@ -16,6 +18,10 @@ def pdf_to_html(input_pdf_path, output_html_path):
             for element in pdf.chars:
                 sizes.append(element['size'])
                 output += element['text']
+                if "Bold" in element['fontname']:
+                    isBold.append(True)
+                else:
+                    isBold.append(False)
 
             sizes = [round(x) for x in sizes]
 
@@ -35,17 +41,26 @@ def pdf_to_html(input_pdf_path, output_html_path):
                     occurrence += 1
                     count += occurrence
                     font_size = sizes[count]
+                if font_size != lastsize:
+                    html_content += f'{closeTag}'
                 if font_size == lastsize:
-                    html_content += f'{text_element}'
+                    pass
                 elif font_size == uniqueSizesSort[-1]:
-                    html_content += f'{closeTag}<h1>{text_element}'
+                    html_content += '<h1>'
                     closeTag = "</h1>"
                 elif font_size == uniqueSizesSort[-2]:
-                    html_content += f'{closeTag}<h2>{text_element}'
+                    html_content += '<h2>'
                     closeTag = "</h2>"
                 else:
-                    html_content += f'{closeTag}<p>{text_element}'
+                    html_content += '<p>'
                     closeTag = "</p>"
+                if isBold[count] == True and boldText == False:
+                    html_content += '<b>'
+                    boldText = True
+                elif isBold[count] == False and boldText == True:
+                    text_element += '</b>'
+                    boldText = False
+                html_content += f'{text_element}'
                 lastsize = font_size
 
         # Write HTML content to the output file
